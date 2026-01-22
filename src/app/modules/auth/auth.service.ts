@@ -37,6 +37,7 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     _id,
     emailVerifiedAt,
     username,
+    email,
   };
   // checking is the user is rusticate
 

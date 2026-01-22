@@ -20,20 +20,22 @@ const auth =
 
       verifiedUser = jwtHelpers.verifyToken(
         token,
-        config.jwt.access_secret as Secret
+        config.jwt.access_secret as Secret,
       );
 
-      console.log(verifiedUser);
       req.user = verifiedUser; // role  , userid
 
-      if (verifiedUser?.role == ENUM_USER_PERMISSION.SUPER_ADMIN) {
+      if (
+        verifiedUser?.role == ENUM_USER_PERMISSION.SUPER_ADMIN ||
+        requiredRoles.includes(ENUM_USER_PERMISSION.ANY)
+      ) {
         next();
         return;
       }
       if (requiredRoles.length && !requiredRoles.includes(verifiedUser?.role)) {
         throw new AppError(
           StatusCodes.FORBIDDEN,
-          "You are not authorized to perform this action"
+          "You are not authorized to perform this action",
         );
       }
       next();
