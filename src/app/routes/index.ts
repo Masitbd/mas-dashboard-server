@@ -3,6 +3,8 @@ import { UserRoute } from "../modules/user/use.routes";
 import { AuthRoute } from "../modules/auth/auth.routes";
 import { UserProfileRoute } from "../modules/profile/profile.routes";
 import { CategoryRoute } from "../modules/categories/category.routes";
+import { TagRoutes } from "../modules/tags/category.routes";
+import { PostRoute } from "../modules/post/post.routes";
 
 const router = Router();
 
@@ -22,6 +24,14 @@ const modules = [
   {
     path: "/categories",
     module: CategoryRoute,
+  },
+  {
+    path: "/tags",
+    module: TagRoutes,
+  },
+  {
+    path: "/posts",
+    module: PostRoute,
   },
 ];
 

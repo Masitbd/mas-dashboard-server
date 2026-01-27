@@ -1,15 +1,16 @@
 // category.route.ts
 import { Router } from "express";
 import validateRequest from "../../middleware/validateRequest";
-import { CategoryController } from "./category.controller";
-import {
-  CategoryCreationZodSchema,
-  CategoryUpdateZodSchema,
-  CategoryIdParamZodSchema,
-  CategoryQueryZodSchema,
-} from "./category.validate";
+
 import auth from "../../middleware/auth";
 import { ENUM_USER_PERMISSION } from "../../enums/enumUserPermission";
+import {
+  TagCreationZodSchema,
+  TagIdParamZodSchema,
+  TagQueryZodSchema,
+  TagUpdateZodSchema,
+} from "./tag.validate";
+import { TagController } from "./tag.controller";
 
 const routes = Router();
 
@@ -17,39 +18,40 @@ const routes = Router();
 routes.post(
   "/",
   auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
-  validateRequest(CategoryCreationZodSchema),
-  CategoryController.createCategory,
+  validateRequest(TagCreationZodSchema),
+  TagController.createTag,
 );
 
 // Find all (pagination + search)
 routes.get(
   "/",
-  validateRequest(CategoryQueryZodSchema),
-  CategoryController.getAllCategories,
+  auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
+  validateRequest(TagQueryZodSchema),
+  TagController.getAllTags,
 );
 
 // Find one
 routes.get(
   "/:id",
   auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
-  validateRequest(CategoryIdParamZodSchema),
-  CategoryController.getCategoryById,
+  validateRequest(TagIdParamZodSchema),
+  TagController.getTagById,
 );
 
 // Update
 routes.patch(
   "/:id",
   auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
-  validateRequest(CategoryUpdateZodSchema),
-  CategoryController.updateCategoryById,
+  validateRequest(TagUpdateZodSchema),
+  TagController.updateTagById,
 );
 
 // Delete
 routes.delete(
   "/:id",
   auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
-  validateRequest(CategoryIdParamZodSchema),
-  CategoryController.deleteCategoryById,
+  validateRequest(TagIdParamZodSchema),
+  TagController.deleteTagById,
 );
 
-export const CategoryRoute = routes;
+export const TagRoutes = routes;
