@@ -201,6 +201,27 @@ const removeTagsFromPost: RequestHandler = catchAsync(
   },
 );
 
+// Changing the post status
+
+const ChangePostStatus: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user;
+
+    const result = await PostService.changeStatus(
+      user as IUser,
+      id as string,
+      req.body,
+    );
+
+    sendResponse(res, {
+      statusCode: status.OK,
+      success: true,
+      message: "Post Status Updated Successfully",
+      data: result,
+    });
+  },
+);
 export const PostController = {
   createPost,
   getPostById,
@@ -210,4 +231,5 @@ export const PostController = {
   deletePostById,
   addTagsToPost,
   removeTagsFromPost,
+  ChangePostStatus,
 };

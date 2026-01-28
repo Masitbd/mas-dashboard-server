@@ -92,4 +92,14 @@ routes.delete(
   PostController.removeTagsFromPost,
 );
 
+// Changing post Status
+routes.patch(
+  "/change-status/:id",
+  auth(
+    ENUM_USER_PERMISSION.ADMIN,
+    ENUM_USER_PERMISSION.SUPER_ADMIN,
+    ENUM_USER_PERMISSION.AUTHOR,
+  ),
+);
+
 export const PostRoute = routes;

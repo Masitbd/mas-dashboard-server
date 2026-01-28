@@ -4,6 +4,12 @@ import { PostModel } from "./post.model";
 import { Post, Post as PostDb } from "./post.interface";
 import { IUser } from "../user/user.interface";
 import { UserModel } from "../user/user.model";
+import AppError from "../../errors/APiError";
+import { HttpStatusCode } from "axios";
+import { ENUM_POST_STATUS } from "../../enums/EnumPostStatus";
+import { ENUM_USER_PERMISSION } from "../../enums/enumUserPermission";
+import { ENUM_USER_STATUS } from "../../enums/userStatus.enum";
+import { UserProfileModel } from "../profile/profile.model";
 // -----------------------------
 // Types
 // -----------------------------
@@ -112,7 +118,7 @@ function computeReadingTime(content: string): string {
 
 const DEFAULT_POPULATE: PopulateOptions[] = [
   { path: "category", select: "name" },
-  { path: "author", select: "name email avatarUrl" },
+  { path: "author", select: "name email avatarUrl uuid" },
   { path: "tags", select: "name" },
 ];
 
@@ -165,7 +171,7 @@ export async function getPostById(
   const _id = toObjectId(id);
 
   let q = PostModel.findById(_id);
-  const populate = resolvePopulate(opts.populate);
+  const populate = resolvePopulate(opts.populate ? true : false);
   if (populate.length) q = q.populate(populate);
 
   if (opts.lean) return q.lean({ virtuals: true });
@@ -177,7 +183,7 @@ export async function getPostById(
 
 export async function getPostBySlug(slug: string, opts: ServiceOptions = {}) {
   let q = PostModel.findOne({ slug: slug.toLowerCase().trim() });
-  const populate = resolvePopulate(opts.populate);
+  const populate = resolvePopulate(opts.populate ? true : false);
   if (populate.length) q = q.populate(populate);
 
   if (opts.lean) return q.lean({ virtuals: true });
@@ -224,7 +230,7 @@ export async function listPosts(query: ListPostsQuery = {}) {
   ]);
 
   return {
-    items,
+    data: items,
     meta: {
       page,
       limit,
@@ -327,6 +333,49 @@ export async function removeTagsFromPost(
   return updated;
 }
 
+const changeStatus = async (
+  user: IUser,
+  id: string,
+  payload: { status: ENUM_POST_STATUS },
+) => {
+  const doesExists = await PostModel.findById(id);
+  if (!doesExists) {
+    throw new AppError(HttpStatusCode.NotFound, "Post Now found");
+  }
+  if (payload.status == ENUM_POST_STATUS.PUBLISHED) {
+    if (user?.role == ENUM_USER_PERMISSION.ADMIN) {
+      await PostModel.findByIdAndUpdate(id, {
+        status: ENUM_POST_STATUS.PUBLISHED,
+      });
+      return "Post Status Updated Successfully";
+    } else {
+      throw new AppError(
+        HttpStatusCode.Unauthorized,
+        "You are not authorized to change the post status",
+      );
+    }
+  }
+  if (user?.role !== ENUM_USER_PERMISSION.ADMIN) {
+    const userProfile = await UserProfileModel.findById(doesExists.author);
+    if (userProfile?.uuid == user?.uuid) {
+      await PostModel.findByIdAndUpdate(id, {
+        status: payload.status,
+      });
+      return "Post Status Updated Successfully";
+    } else {
+      throw new AppError(
+        HttpStatusCode.Unauthorized,
+        "You are not authorized to change the post status",
+      );
+    }
+  } else {
+    await PostModel.findByIdAndUpdate(id, {
+      status: payload.status,
+    });
+    return "Post Status Updated Successfully";
+  }
+};
+
 export const PostService = {
   createPost,
   getPostById,
@@ -336,4 +385,5 @@ export const PostService = {
   deletePostById,
   addTagsToPost,
   removeTagsFromPost,
+  changeStatus,
 };
