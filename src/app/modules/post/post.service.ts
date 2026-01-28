@@ -45,6 +45,8 @@ export type UpdatePostInput = Partial<{
 }>;
 
 export type ListPostsQuery = Partial<{
+  placement: string;
+
   page: number;
   limit: number;
 
@@ -206,6 +208,7 @@ export async function listPosts(query: ListPostsQuery = {}) {
   if (query.categoryId) filter.category = toObjectId(query.categoryId);
   if (query.authorId) filter.author = toObjectId(query.authorId);
   if (query.tagId) filter.tags = toObjectId(query.tagId);
+  if (query.placement) filter.placement = (query?.placement).toString();
 
   // text search (requires text index you added earlier)
   if (query.search?.trim()) {
@@ -376,6 +379,16 @@ const changeStatus = async (
   }
 };
 
+const changePlaceMent = async (id: string, payload: { placement: string }) => {
+  const doesExists = await PostModel.findById(id);
+  if (!doesExists) {
+    throw new AppError(HttpStatusCode.NotFound, "Post Not found");
+  }
+  await PostModel.findByIdAndUpdate(id, { placement: payload.placement });
+
+  return "Placement Updated Successfully";
+};
+
 export const PostService = {
   createPost,
   getPostById,
@@ -386,4 +399,5 @@ export const PostService = {
   addTagsToPost,
   removeTagsFromPost,
   changeStatus,
+  changePlaceMent,
 };

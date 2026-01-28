@@ -71,6 +71,11 @@ const PostSchema = new Schema<Post>(
       enum: ["draft", "published", "archived"],
       default: "draft",
     },
+    placement: {
+      type: String,
+      default: "general",
+      enum: ["general", "featured", "popular"],
+    },
   },
   {
     timestamps: true,

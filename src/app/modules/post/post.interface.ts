@@ -21,4 +21,5 @@ export interface Post {
   updatedAt: string; // ISO
   publishedAt?: string; // ISO
   status: "draft" | "published" | "archived";
+  placement?: "general" | "featured" | "popular";
 }

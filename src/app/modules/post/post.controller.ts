@@ -90,6 +90,7 @@ const getAllPosts: RequestHandler = catchAsync(
       authorId,
       tagId,
       populate,
+      placement,
     } = req.query;
 
     const result = await PostService.listPosts({
@@ -105,6 +106,7 @@ const getAllPosts: RequestHandler = catchAsync(
       tagId: tagId ? String(tagId) : undefined,
 
       populate: (populate ? String(populate) : undefined) as unknown as boolean, // e.g. "true" or "author,category,tags"
+      placement: placement as string,
     });
 
     sendResponse(res, {
@@ -222,6 +224,22 @@ const ChangePostStatus: RequestHandler = catchAsync(
     });
   },
 );
+
+const ChangePostPlacement: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user;
+
+    const result = await PostService.changePlaceMent(id as string, req.body);
+
+    sendResponse(res, {
+      statusCode: status.OK,
+      success: true,
+      message: "Post Placement Updated Successfully",
+      data: result,
+    });
+  },
+);
 export const PostController = {
   createPost,
   getPostById,
@@ -232,4 +250,5 @@ export const PostController = {
   addTagsToPost,
   removeTagsFromPost,
   ChangePostStatus,
+  ChangePostPlacement,
 };

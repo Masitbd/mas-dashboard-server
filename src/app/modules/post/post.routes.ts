@@ -94,12 +94,19 @@ routes.delete(
 
 // Changing post Status
 routes.patch(
-  "/change-status/:id",
+  "/change-status/test/:id",
   auth(
     ENUM_USER_PERMISSION.ADMIN,
     ENUM_USER_PERMISSION.SUPER_ADMIN,
     ENUM_USER_PERMISSION.AUTHOR,
   ),
+  PostController.ChangePostStatus,
 );
 
+// Changing post Placement
+routes.patch(
+  "/change-placement/old/:id",
+  auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
+  PostController.ChangePostPlacement,
+);
 export const PostRoute = routes;
