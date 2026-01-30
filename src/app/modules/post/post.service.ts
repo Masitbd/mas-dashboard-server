@@ -1,5 +1,5 @@
 // services/post.service.ts
-import mongoose, { Types, type PopulateOptions } from "mongoose";
+import mongoose, { PipelineStage, Types, type PopulateOptions } from "mongoose";
 import { PostModel } from "./post.model";
 import { Post, Post as PostDb } from "./post.interface";
 import { IUser } from "../user/user.interface";
@@ -10,6 +10,7 @@ import { ENUM_POST_STATUS } from "../../enums/EnumPostStatus";
 import { ENUM_USER_PERMISSION } from "../../enums/enumUserPermission";
 import { ENUM_USER_STATUS } from "../../enums/userStatus.enum";
 import { UserProfileModel } from "../profile/profile.model";
+import { TagModel } from "../tags/tag.model";
 // -----------------------------
 // Types
 // -----------------------------
@@ -50,9 +51,9 @@ export type ListPostsQuery = Partial<{
   page: number;
   limit: number;
 
-  categoryId: string | ObjectId;
+  category: string | ObjectId;
   authorId: string | ObjectId;
-  tagId: string | ObjectId;
+  tag: string | ObjectId;
 
   search: string; // uses text index
   sortBy: "createdAt" | "updatedAt" | "title";
@@ -205,9 +206,9 @@ export async function listPosts(query: ListPostsQuery = {}) {
 
   const filter: any = {};
 
-  if (query.categoryId) filter.category = toObjectId(query.categoryId);
+  if (query.category) filter.category = toObjectId(query.category);
   if (query.authorId) filter.author = toObjectId(query.authorId);
-  if (query.tagId) filter.tags = toObjectId(query.tagId);
+  if (query.tag) filter.tags = toObjectId(query.tag);
   if (query.placement) filter.placement = (query?.placement).toString();
 
   // text search (requires text index you added earlier)
@@ -389,6 +390,87 @@ const changePlaceMent = async (id: string, payload: { placement: string }) => {
   return "Placement Updated Successfully";
 };
 
+// getting the top categories
+const getTopCategories = async () => {
+  const result = await PostModel.aggregate([
+    // { $match: { status: "published" } },
+    {
+      $group: {
+        _id: "$category",
+        postCount: { $sum: 1 },
+      },
+    },
+    { $sort: { postCount: -1 } },
+    { $limit: 5 },
+
+    // Join category details
+    {
+      $lookup: {
+        from: "categories", // collection name for CategoryModel
+        localField: "_id",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    { $unwind: "$category" },
+    {
+      $project: {
+        _id: "$category._id",
+        name: "$category.name",
+        description: "$category.description",
+        createdAt: "$category.createdAt",
+        updatedAt: "$category.updatedAt",
+        postCount: 1,
+      },
+    },
+  ]);
+  return result;
+};
+
+const getMostPopularTags = async () => {
+  const from = TagModel.collection.name; // e.g. "tags"
+
+  const pipeline = [
+    // optional: only published posts
+    // { $match: { status: "published" } },
+
+    { $unwind: "$tags" },
+
+    {
+      $group: {
+        _id: "$tags",
+        postCount: { $sum: 1 },
+      },
+    },
+    { $sort: { postCount: -1 } },
+    { $limit: 10 },
+
+    // robust lookup (handles string/ObjectId mismatches)
+    {
+      $lookup: {
+        from,
+        localField: "_id",
+        foreignField: "_id",
+        as: "tag",
+      },
+    },
+    { $unwind: "$tag" },
+
+    {
+      $project: {
+        _id: "$tag._id",
+        name: "$tag.name",
+        description: "$tag.description",
+        createdAt: "$tag.createdAt",
+        updatedAt: "$tag.updatedAt",
+        postCount: 1,
+      },
+    },
+  ];
+
+  const popularTags = await PostModel.aggregate(pipeline as PipelineStage[]);
+  return popularTags;
+};
 export const PostService = {
   createPost,
   getPostById,
@@ -400,4 +482,6 @@ export const PostService = {
   removeTagsFromPost,
   changeStatus,
   changePlaceMent,
+  getTopCategories,
+  getMostPopularTags,
 };

@@ -109,4 +109,12 @@ routes.patch(
   auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
   PostController.ChangePostPlacement,
 );
+
+// Fetching top categories accordig to the post
+
+routes.get("/top-categories/new", PostController.gettingTopCategories);
+
+// Fetching top tags accordig to the post
+
+routes.get("/top-tags/new", PostController.gettingTopTags);
 export const PostRoute = routes;

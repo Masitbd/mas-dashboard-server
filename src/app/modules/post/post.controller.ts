@@ -7,6 +7,8 @@ import status from "http-status";
 import { Post as IPost } from "./post.interface";
 import { PostService } from "./post.service";
 import { IUser } from "../user/user.interface";
+import { SortOrder } from "mongoose";
+import { TagModel } from "../tags/tag.model";
 
 /**
  * POST /posts
@@ -86,11 +88,12 @@ const getAllPosts: RequestHandler = catchAsync(
       limit,
       searchTerm,
       sort,
-      categoryId,
+      category,
       authorId,
-      tagId,
+      tag,
       populate,
       placement,
+      sortOrder,
     } = req.query;
 
     const result = await PostService.listPosts({
@@ -101,12 +104,13 @@ const getAllPosts: RequestHandler = catchAsync(
         : undefined) as unknown as string,
       sortBy: sort ? (String(sort) as any) : undefined,
 
-      categoryId: categoryId ? String(categoryId) : undefined,
+      category: category ? String(category) : undefined,
       authorId: authorId ? String(authorId) : undefined,
-      tagId: tagId ? String(tagId) : undefined,
+      tag: tag ? String(tag) : undefined,
 
       populate: (populate ? String(populate) : undefined) as unknown as boolean, // e.g. "true" or "author,category,tags"
       placement: placement as string,
+      sortOrder: (sortOrder ? sortOrder : "asc") as "asc" | "desc",
     });
 
     sendResponse(res, {
@@ -240,6 +244,33 @@ const ChangePostPlacement: RequestHandler = catchAsync(
     });
   },
 );
+
+const gettingTopCategories: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await PostService.getTopCategories();
+
+    sendResponse(res, {
+      statusCode: status.OK,
+      success: true,
+      message: "Top Categories retrieved Successfully",
+      data: result,
+    });
+  },
+);
+
+const gettingTopTags: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await PostService.getMostPopularTags();
+
+    sendResponse(res, {
+      statusCode: status.OK,
+      success: true,
+      message: "Top Tags retrieved Successfully",
+      data: result,
+    });
+  },
+);
+
 export const PostController = {
   createPost,
   getPostById,
@@ -251,4 +282,6 @@ export const PostController = {
   removeTagsFromPost,
   ChangePostStatus,
   ChangePostPlacement,
+  gettingTopCategories,
+  gettingTopTags,
 };
