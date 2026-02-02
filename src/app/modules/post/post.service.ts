@@ -210,7 +210,6 @@ export async function listPosts(query: ListPostsQuery = {}) {
   if (query.authorId) filter.author = toObjectId(query.authorId);
   if (query.tag) filter.tags = toObjectId(query.tag);
   if (query.placement) filter.placement = (query?.placement).toString();
-
   // text search (requires text index you added earlier)
   if (query.search?.trim()) {
     filter.$text = { $search: query.search.trim() };

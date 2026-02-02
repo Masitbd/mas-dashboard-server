@@ -47,7 +47,6 @@ routes.get(
 // Find one by slug (keep before "/:id" to avoid conflicts)
 routes.get(
   "/slug/:slug",
-  auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
   validateRequest(PostSlugParamZodSchema),
   PostController.getPostBySlug,
 );

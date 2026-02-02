@@ -5,6 +5,7 @@ import { UserProfileRoute } from "../modules/profile/profile.routes";
 import { CategoryRoute } from "../modules/categories/category.routes";
 import { TagRoutes } from "../modules/tags/category.routes";
 import { PostRoute } from "../modules/post/post.routes";
+import { CommentRoute } from "../modules/comment/comment.routes";
 
 const router = Router();
 
@@ -32,6 +33,10 @@ const modules = [
   {
     path: "/posts",
     module: PostRoute,
+  },
+  {
+    path: "/comment",
+    module: CommentRoute,
   },
 ];
 

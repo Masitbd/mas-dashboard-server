@@ -9,6 +9,7 @@ import { PostService } from "./post.service";
 import { IUser } from "../user/user.interface";
 import { SortOrder } from "mongoose";
 import { TagModel } from "../tags/tag.model";
+import { HttpStatusCode } from "axios";
 
 /**
  * POST /posts
@@ -89,11 +90,12 @@ const getAllPosts: RequestHandler = catchAsync(
       searchTerm,
       sort,
       category,
-      authorId,
+      author,
       tag,
       populate,
       placement,
       sortOrder,
+      status,
     } = req.query;
 
     const result = await PostService.listPosts({
@@ -105,16 +107,17 @@ const getAllPosts: RequestHandler = catchAsync(
       sortBy: sort ? (String(sort) as any) : undefined,
 
       category: category ? String(category) : undefined,
-      authorId: authorId ? String(authorId) : undefined,
+      authorId: author ? String(author) : undefined,
       tag: tag ? String(tag) : undefined,
 
       populate: (populate ? String(populate) : undefined) as unknown as boolean, // e.g. "true" or "author,category,tags"
       placement: placement as string,
       sortOrder: (sortOrder ? sortOrder : "asc") as "asc" | "desc",
+      status: status,
     });
 
     sendResponse(res, {
-      statusCode: status.OK,
+      statusCode: HttpStatusCode.Ok,
       success: true,
       message: "Posts fetched successfully!",
       data: result,

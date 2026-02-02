@@ -4,8 +4,12 @@ import { UserModel } from "../user/user.model";
 import bcrypt from "bcrypt";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
 import config from "../../config";
-import { Secret } from "jsonwebtoken";
-import { ILoginUser, ILoginUserResponse } from "./auth.interface";
+import { JwtPayload, Secret } from "jsonwebtoken";
+import {
+  IChangePassword,
+  ILoginUser,
+  ILoginUserResponse,
+} from "./auth.interface";
 import { HttpStatusCode } from "axios";
 import { UserProfileModel } from "../profile/profile.model";
 
@@ -110,7 +114,39 @@ const refreshToken = async (token: string) => {
   };
 };
 
+const changePassword = async (
+  user: JwtPayload | null,
+  payload: IChangePassword,
+): Promise<string> => {
+  const { oldPassword, newPassword } = payload;
+
+  const isUserExist = await UserModel.findOne({ uuid: user?.uuid }).select(
+    "+password",
+  );
+
+  if (!isUserExist) {
+    throw new AppError(HttpStatusCode.NotFound, "User does not exist");
+  }
+
+  // checking old password
+  // no need for password validation for provider login
+  if (
+    isUserExist.password &&
+    !(await bcrypt.compare(payload?.oldPassword, isUserExist.password))
+  ) {
+    throw new AppError(statusCodes.UNAUTHORIZED, "Old Password is incorrect");
+  }
+
+  isUserExist.password = await bcrypt.hash(newPassword, config.salt);
+
+  // updating using save()
+  isUserExist.save();
+
+  return "Password updated Successfully";
+};
+
 export const AuthService = {
   loginUser,
   refreshToken,
+  changePassword,
 };
