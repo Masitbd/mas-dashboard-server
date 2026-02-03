@@ -143,6 +143,7 @@ export async function createPost(
 ) {
   const baseSlug = slugify(input.slug?.trim() || input.title);
   const uniqueSlug = await ensureUniqueSlug(baseSlug);
+  const userProfile = await UserProfileModel.findOne({ uuid: user?.uuid });
 
   const doc: PostDb = {
     slug: uniqueSlug,
@@ -153,7 +154,7 @@ export async function createPost(
 
     category: toObjectId(input.category),
     tags: (input.tagIds ?? []).map(toObjectId),
-    author: toObjectId(user._id),
+    author: userProfile?._id,
 
     readingTime: input.readingTime?.trim() || computeReadingTime(input.content),
     status: "draft",

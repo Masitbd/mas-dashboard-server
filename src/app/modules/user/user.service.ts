@@ -33,6 +33,10 @@ const signUp = async (userData: Partial<IUser>): Promise<IUser> => {
   userData.emailVerifiedAt = null;
   userData.lastLoginAt = null;
   const newUser = await UserModel.create({ ...userData });
+  const profile = await UserProfileModel.create({
+    displayName: newUser?.username,
+    uuid: newUser.uuid,
+  });
   return {
     email: newUser.email,
     username: newUser.username,

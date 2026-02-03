@@ -6,6 +6,7 @@ import { CategoryRoute } from "../modules/categories/category.routes";
 import { TagRoutes } from "../modules/tags/category.routes";
 import { PostRoute } from "../modules/post/post.routes";
 import { CommentRoute } from "../modules/comment/comment.routes";
+import { AssetRoute } from "../modules/asset/asset.routes";
 
 const router = Router();
 
@@ -37,6 +38,10 @@ const modules = [
   {
     path: "/comment",
     module: CommentRoute,
+  },
+  {
+    path: "/assets",
+    module: AssetRoute,
   },
 ];
 
