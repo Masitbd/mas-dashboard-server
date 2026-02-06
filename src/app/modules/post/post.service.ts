@@ -203,7 +203,7 @@ export async function listPosts(query: ListPostsQuery = {}) {
   const skip = (page - 1) * limit;
 
   const sortBy = query.sortBy ?? "createdAt";
-  const sortOrder = query.sortOrder === "asc" ? 1 : -1;
+  const sortOrder = query.sortOrder === "desc" ? 1 : -1;
 
   const filter: any = {};
 
