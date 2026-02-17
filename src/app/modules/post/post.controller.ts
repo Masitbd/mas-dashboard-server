@@ -113,7 +113,7 @@ const getAllPosts: RequestHandler = catchAsync(
       populate: (populate ? String(populate) : undefined) as unknown as boolean, // e.g. "true" or "author,category,tags"
       placement: placement as string,
       sortOrder: (sortOrder ? sortOrder : "asc") as "asc" | "desc",
-      status: status,
+      status: status as string,
     });
 
     sendResponse(res, {

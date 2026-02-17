@@ -23,17 +23,11 @@ routes.post(
 );
 
 // Find all (pagination + search)
-routes.get(
-  "/",
-  auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
-  validateRequest(TagQueryZodSchema),
-  TagController.getAllTags,
-);
+routes.get("/", validateRequest(TagQueryZodSchema), TagController.getAllTags);
 
 // Find one
 routes.get(
   "/:id",
-  auth(ENUM_USER_PERMISSION.ADMIN, ENUM_USER_PERMISSION.SUPER_ADMIN),
   validateRequest(TagIdParamZodSchema),
   TagController.getTagById,
 );

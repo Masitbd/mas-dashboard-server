@@ -7,6 +7,7 @@ import { TagRoutes } from "../modules/tags/category.routes";
 import { PostRoute } from "../modules/post/post.routes";
 import { CommentRoute } from "../modules/comment/comment.routes";
 import { AssetRoute } from "../modules/asset/asset.routes";
+import { ContactRoute } from "../modules/contact/contact.routes";
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const modules = [
   {
     path: "/assets",
     module: AssetRoute,
+  },
+  {
+    path: "/contact",
+    module: ContactRoute,
   },
 ];
 

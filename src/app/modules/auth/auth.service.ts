@@ -19,6 +19,9 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
   const isUserExist = await UserModel.findOne({ email: email }).select(
     "+password",
   );
+  const doesProfileExists = await UserProfileModel.findOne({
+    uuid: isUserExist?.uuid,
+  });
 
   if (!isUserExist) {
     throw new AppError(statusCodes.NOT_FOUND, "User does not exist");
@@ -44,6 +47,7 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     emailVerifiedAt,
     username,
     email,
+    profileId: doesProfileExists?._id,
   };
   // checking is the user is rusticate
 
@@ -99,6 +103,7 @@ const refreshToken = async (token: string) => {
     role: isUserExist.role,
     email: isUserExist.email,
     emailVerifiedAt: isUserExist.emailVerifiedAt,
+    profileId: profile?._id,
   };
 
   //generate new token

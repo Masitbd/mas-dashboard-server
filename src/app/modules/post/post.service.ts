@@ -60,6 +60,7 @@ export type ListPostsQuery = Partial<{
   sortOrder: "asc" | "desc";
 
   populate: boolean | (string | PopulateOptions)[];
+  status: string;
 }>;
 
 export type ServiceOptions = Partial<{
@@ -211,6 +212,7 @@ export async function listPosts(query: ListPostsQuery = {}) {
   if (query.authorId) filter.author = toObjectId(query.authorId);
   if (query.tag) filter.tags = toObjectId(query.tag);
   if (query.placement) filter.placement = (query?.placement).toString();
+  if (query?.status) filter.status = (query?.status).toString();
   // text search (requires text index you added earlier)
   if (query.search?.trim()) {
     filter.$text = { $search: query.search.trim() };
