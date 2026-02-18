@@ -48,6 +48,8 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginUserResponse> => {
     username,
     email,
     profileId: doesProfileExists?._id,
+    avatarUrl: doesProfileExists?.avatarUrl,
+    displayName: doesProfileExists?.displayName,
   };
   // checking is the user is rusticate
 
@@ -104,6 +106,8 @@ const refreshToken = async (token: string) => {
     email: isUserExist.email,
     emailVerifiedAt: isUserExist.emailVerifiedAt,
     profileId: profile?._id,
+    avatarUrl: profile?.avatarUrl,
+    displayName: profile?.displayName,
   };
 
   //generate new token
