@@ -122,7 +122,7 @@ function computeReadingTime(content: string): string {
 
 const DEFAULT_POPULATE: PopulateOptions[] = [
   { path: "category", select: "name" },
-  { path: "author", select: "name email avatarUrl uuid" },
+  { path: "author", select: "displayName email avatarUrl uuid" },
   { path: "tags", select: "name" },
 ];
 

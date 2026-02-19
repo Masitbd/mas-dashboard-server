@@ -8,6 +8,7 @@ import { PostRoute } from "../modules/post/post.routes";
 import { CommentRoute } from "../modules/comment/comment.routes";
 import { AssetRoute } from "../modules/asset/asset.routes";
 import { ContactRoute } from "../modules/contact/contact.routes";
+import { NewsletterSubscriberRoute } from "../modules/newsletter-subscriber/newsletterSubscriber.routes";
 
 const router = Router();
 
@@ -47,6 +48,10 @@ const modules = [
   {
     path: "/contact",
     module: ContactRoute,
+  },
+  {
+    path: "/newsletter-subscriber",
+    module: NewsletterSubscriberRoute,
   },
 ];
 

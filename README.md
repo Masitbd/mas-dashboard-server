@@ -195,6 +195,15 @@ export type Contact = {
   updatedAt: string;
 };
 
+export type NewsletterSubscriber = {
+  id?: string;
+  _id?: string;
+  email: string;
+  subscribed: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type PaginatedResult<T> = {
   meta: {
     page: number;
@@ -488,6 +497,29 @@ Response data: `PaginatedResult<Contact>`
 
 3. `GET /contact/:id` (Admin, Super Admin)
 Response data: `Contact`
+
+### Newsletter Subscriber
+
+1. `POST /newsletter-subscriber` (Public)
+Request:
+```json
+{
+  "email": "john@example.com",
+  "subscribed": true
+}
+```
+Response data: `NewsletterSubscriber`
+
+2. `GET /newsletter-subscriber` (Admin, Super Admin)
+Query:
+- `page`, `limit`
+- `searchTerm`
+- filters: `email`, `subscribed` (`true|false`)
+- `sort` (`newest | oldest | emailAsc | emailDesc`)
+Response data: `PaginatedResult<NewsletterSubscriber>`
+
+3. `GET /newsletter-subscriber/:id` (Admin, Super Admin)
+Response data: `NewsletterSubscriber`
 
 ## Frontend Integration Notes
 
